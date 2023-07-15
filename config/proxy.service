@@ -1,0 +1,10 @@
+[Unit]
+Description=Proxy Startup Service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/proxy_startup_script.sh
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
