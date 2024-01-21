@@ -1,0 +1,8 @@
+- name: Setup VPN
+  hosts: all 
+  roles:
+  - { role: install_docker, become: true }
+  - { role: enable_bbr, become: true }
+  - { role: apply_certificate, become: true }
+  - { role: install_cloudflare_warp, become: true }
+  - { role: start_vpn }

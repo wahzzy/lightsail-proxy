@@ -1,0 +1,21 @@
+- name: Update all packages
+  apt: name="*" state=latest update_cache=true force_apt_get=true
+
+- name: Install snapd
+  apt: name=snapd state=latest
+
+- name: Remove certbot
+  apt: name=certbot state=absent
+
+- name: Snap Install Certbot
+  command: snap install --classic certbot
+
+- name: Setup Certbot Symlink
+  file: path=/usr/bin/certbot
+        src=/snap/bin/certbot
+        state=link 
+
+# Need to renew ip on cloudflare here
+
+- name: Register certbot
+  command: certbot certonly --standalone -d {{ DOMAIN }} -m {{ EMAIL }} --agree-tos --no-eff-email 

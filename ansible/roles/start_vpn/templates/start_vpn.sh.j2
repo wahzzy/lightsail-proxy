@@ -1,7 +1,9 @@
 #!/bin/bash
 #
-DOMAIN=$DOMAIN
-AUTH=$AUTH
+DOMAIN={{ DOMAIN }}
+USER={{ USER }}
+PASS={{ PASS }}
+AUTH=$(echo -n ${USER}:${PASS} | base64)
 
 BIND_IP=0.0.0.0
 CERT_DIR=/etc/letsencrypt

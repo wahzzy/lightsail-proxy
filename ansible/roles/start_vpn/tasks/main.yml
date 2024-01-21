@@ -1,0 +1,7 @@
+- name: Copy 
+  template:
+    src: templates/start_vpn.sh.j2
+    dest: ~/start_vpn.sh
+
+- name: start vpn
+  command: bash start_vpn.sh

@@ -1,0 +1,18 @@
+- name: Update all packages
+  apt: name="*" state=latest update_cache=true force_apt_get=true
+
+- name: Install GPG Dependency
+  apt: name=gnupg2 state=latest
+
+- name: Install Python Dependency
+  apt: name=python3-apt state=latest
+
+- name: Add the Docker GPG apt Key
+  apt_key: url=https://download.docker.com/linux/ubuntu/gpg state=present
+
+- name : Add the Docker Repository
+  apt_repository: repo="deb https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable" state=present
+
+- name : Update apt cache and install docker
+  apt: update_cache=yes name={{ item }} state=latest
+  loop: [docker-ce, docker-ce-cli, containerd.io, docker-buildx-plugin]

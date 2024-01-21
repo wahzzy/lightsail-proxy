@@ -1,0 +1,11 @@
+# https://wiki.crowncloud.net/?How_to_enable_BBR_on_Ubuntu_22_04
+- name: Configure Enable BBR
+  blockinfile: 
+    dest: /etc/sysctl.conf
+    block: |
+      net.core.default_qdisc=fq
+      net.ipv4.tcp_congestion_control=bbr
+    backup: yes
+
+- name: Refresh Configuration
+  command: sysctl -p
