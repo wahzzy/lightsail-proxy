@@ -1,21 +1,30 @@
 # lightsail-proxy
+> https://github.com/haoel/haoel.github.io
 
+## Preparation
+1. godaddy
+2. cloudflare
+3. lightsail
+
+## Setup/delete proxy server
 ### Init 
-`cd terraform`
-`terraform init`
+`terraform -chdir=terraform init`
 
 ### Create Instance
-`terraform apply -var-file="vpn.tfvars"`
+`terraform -chdir=terraform apply -var-file="vpn.tfvars"`
 
 ### Config IP after Creating
-1. terraform/inventory
-2. config ip on cloudfare
+1. ./ansible/inventory
+2. ./python/configs.yml -> `python3 python/update_dns_record.py`
 
 ### Run Ansible Playbook 
-`ansible-playbook setup.yml -i inventory --extra-vars "DOMAIN=<domain> USER=<user> PASS=<pass> EMAIL=<email>"`
+`ansible-playbook ansible/setup.yml -i ansible/inventory --extra-vars "DOMAIN=<domain> USER=<user> PASS=<pass> EMAIL=<email>"`
 
 ### Delete Instance
-`terraform apply -var-file="vpn.tfvars" --destroy`
+`terraform -chdir=terraform apply -var-file="vpn.tfvars" --destroy`
+
+## Setup local proxy
+`gost -L http://:1442 -L socks5://:1443 -F 'mwss://<user>:<password>@<domain>:2083'`
 
 ## TODO
 1. Link inventory ip 
