@@ -1,12 +1,13 @@
 import yaml
 import requests
 import json
+import os
 # Update DNS Record
 def update_dns_record():
 
     configs = {}
     # read config
-    with open("python/configs.yml", "r") as config_file:
+    with open(f"{os.getcwd()}/../python/configs.yml", "r") as config_file:
         configs = yaml.safe_load(config_file)
 
     cloudflare_base_url = 'https://api.cloudflare.com/client/v4'
