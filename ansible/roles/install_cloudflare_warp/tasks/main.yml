@@ -18,7 +18,6 @@
 - name: set 
   shell: |
     warp-cli --accept-tos set-mode proxy
-    warp-cli --accept-tos enable-always-on
 
 - name : connect
   command: warp-cli --accept-tos connect
