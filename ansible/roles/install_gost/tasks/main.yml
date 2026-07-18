@@ -1,0 +1,27 @@
+- name: Install Gost prerequisites
+  apt:
+    name: [ca-certificates, curl, tar]
+    state: present
+    update_cache: true
+
+- name: Download Gost archive
+  get_url:
+    url: "https://github.com/ginuerzh/gost/releases/download/v{{ gost_version }}/gost_{{ gost_version }}_linux_amd64.tar.gz"
+    dest: "/tmp/gost_{{ gost_version }}_linux_amd64.tar.gz"
+    mode: '0644'
+
+- name: Extract Gost
+  unarchive:
+    src: "/tmp/gost_{{ gost_version }}_linux_amd64.tar.gz"
+    dest: /tmp
+    remote_src: true
+    creates: /tmp/gost
+
+- name: Install Gost binary
+  copy:
+    src: /tmp/gost
+    dest: /usr/local/bin/gost
+    remote_src: true
+    owner: root
+    group: root
+    mode: '0755'

@@ -1,0 +1,66 @@
+- name: Install nvm prerequisites
+  ansible.builtin.apt:
+    name: curl
+    state: present
+    update_cache: true
+
+- name: Download and install nvm
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.6/install.sh | bash
+  args:
+    executable: /bin/bash
+    creates: /root/.nvm/nvm.sh
+
+- name: Install Node.js 24 with nvm
+  ansible.builtin.shell: |
+    source /root/.nvm/nvm.sh
+    nvm install 24
+    nvm alias default 24
+  args:
+    executable: /bin/bash
+  register: codex_node_install
+  changed_when: "'already installed' not in codex_node_install.stdout"
+
+- name: Check Node.js runtime before installing Codex
+  ansible.builtin.shell: |
+    source /root/.nvm/nvm.sh
+    node --version
+  args:
+    executable: /bin/bash
+  register: codex_node_version
+  changed_when: false
+
+- name: Require Node.js 24
+  ansible.builtin.assert:
+    that: (codex_node_version.stdout | trim | regex_replace('^v', '')) is version('24.0.0', '>=')
+    fail_msg: "Node.js {{ codex_node_version.stdout }} is not Node.js 24 or newer."
+
+- name: Check npm version before installing Codex
+  ansible.builtin.shell: |
+    source /root/.nvm/nvm.sh
+    npm --version
+  args:
+    executable: /bin/bash
+  register: codex_npm_version
+  changed_when: false
+
+- name: Install OpenAI Codex CLI
+  ansible.builtin.shell: |
+    source /root/.nvm/nvm.sh
+    npm install --global @openai/codex
+  args:
+    executable: /bin/bash
+
+- name: Verify Codex CLI installation
+  ansible.builtin.shell: |
+    source /root/.nvm/nvm.sh
+    codex --version
+  args:
+    executable: /bin/bash
+  register: codex_version
+  changed_when: false
+
+- name: Show Codex login instructions
+  ansible.builtin.debug:
+    msg: "Codex CLI installed. SSH to the instance and run `codex login` interactively; authentication is intentionally not automated."

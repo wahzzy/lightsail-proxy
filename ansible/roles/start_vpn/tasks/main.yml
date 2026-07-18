@@ -1,7 +1,21 @@
-- name: Copy 
+- name: Install Gost systemd units
   template:
-    src: templates/start_vpn.sh.j2
-    dest: ~/start_vpn.sh
+    src: gost.service.j2
+    dest: "/etc/systemd/system/{{ item.name }}.service"
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { name: gost-vpn, port: 2053, forward: '' }
+    - { name: gost-warp-vpn, port: 2083, forward: '-F socks://localhost:40000' }
+  when: item.name == 'gost-vpn' or gost_warp_enabled | bool
+  notify: Restart Gost
 
-- name: start vpn
-  command: bash start_vpn.sh
+- name: Enable and start Gost services
+  systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+    daemon_reload: true
+  loop: [gost-vpn, gost-warp-vpn]
+  when: item == 'gost-vpn' or gost_warp_enabled | bool

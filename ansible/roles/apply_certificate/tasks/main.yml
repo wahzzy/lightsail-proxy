@@ -15,7 +15,20 @@
         src=/snap/bin/certbot
         state=link 
 
-# Need to renew ip on cloudflare here
+- name: Check for existing certificate
+  stat:
+    path: "/etc/letsencrypt/live/{{ DOMAIN }}/fullchain.pem"
+  register: certificate_file
 
-- name: Register certbot
-  command: certbot certonly --standalone -d {{ DOMAIN }} -m {{ EMAIL }} --agree-tos --no-eff-email 
+- name: Register certificate for the first time
+  command: >-
+    certbot certonly --standalone --non-interactive
+    -d {{ DOMAIN }} -m {{ EMAIL }} --agree-tos --no-eff-email
+  when: not certificate_file.stat.exists
+
+- name: Renew existing certificate when necessary
+  command: >-
+    certbot renew --cert-name {{ DOMAIN }} --non-interactive
+  register: certificate_renewal
+  changed_when: "'not yet due for renewal' not in certificate_renewal.stdout"
+  when: certificate_file.stat.exists

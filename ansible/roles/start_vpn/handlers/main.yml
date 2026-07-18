@@ -1,0 +1,7 @@
+- name: Restart Gost
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop: [gost-vpn, gost-warp-vpn]
+  when: item == 'gost-vpn' or gost_warp_enabled | bool
